@@ -1,0 +1,142 @@
+CREATE DATABASE db_BarbeariaEstrela2023 ON PRIMARY (
+NAME = db_BarbeariaEstrela2023,
+FILENAME = 'C:\SQL\db_BarbeariaEstrela2023.mdf' ,
+SIZE = 6MB,
+MAXSIZE = 15MB,
+FILEGROWTH = 10%
+)
+LOG ON (
+NAME = db_BarbeariaEstrela2023_log,
+FILENAME = 'C:\SQL\db_BarbeariaEstrela2023_log.ldf',
+SIZE = 1MB,
+FILEGROWTH = 1MB
+)
+GO
+
+USE db_BarbeariaEstrela2023;
+
+CREATE TABLE tbl_Funcionarios1 (
+IdFuncionario SMALLINT PRIMARY KEY IDENTITY,
+NomeFuncionario VARCHAR(60) NOT NULL,
+SobrenomeFuncionario VARCHAR (60) NOT NULL,
+FuncaoFuncionario Varchar (60) NOT NULL
+);
+
+CREATE TABLE tbl_CadastroCliente1 (
+IdCliente SMALLINT PRIMARY KEY IDENTITY,
+NomeCliente VARCHAR(60) NOT NULL,
+Telefone VARCHAR (11) NOT NULL,
+DataAgendamento Date,
+HorarioAgendamento Time
+);
+
+CREATE TABLE tbl_Servicos1 (
+IdServiço SMALLINT PRIMARY KEY IDENTITY,
+NomeServico VARCHAR (80) NOT NULL,
+PreçoServico MONEY ,
+DescricaoServico VARCHAR (300),
+);
+
+CREATE TABLE tbl_funcionario_cliente (
+IdCliente SMALLINT NOT NULL,
+IdFuncionario SMALLINT NOT NULL,
+CONSTRAINT fkchave PRIMARY KEY(IdCliente,IdFuncionario),
+CONSTRAINT atendido FOREIGN KEY (IdCliente)
+    REFERENCES tbl_CadastroCliente1 (IdCliente),
+CONSTRAINT atende FOREIGN KEY (IdFuncionario)
+    REFERENCES tbl_Funcionarios1 (IdFuncionario),
+);
+
+CREATE TABLE tbl_Cliente_Servicos1 (
+IdCliente SMALLINT NOT NULL,
+IdServiço SMALLINT NOT NULL,
+CONSTRAINT chavefk PRIMARY KEY(IdCliente,IdServiço),
+CONSTRAINT recebe FOREIGN KEY (IdCliente)
+    REFERENCES tbl_CadastroCliente1 (IdCliente),
+CONSTRAINT recebido FOREIGN KEY (IdServiço)
+    REFERENCES tbl_Servicos1 (IdServiço),
+);
+
+CREATE TABLE tbl_funcionario_servico (
+IdFuncionario SMALLINT NOT NULL,
+IdServiço SMALLINT NOT NULL,
+CONSTRAINT fkkey PRIMARY KEY(IdFuncionario,IdServiço),
+CONSTRAINT faz FOREIGN KEY (IdFuncionario)
+    REFERENCES tbl_Funcionarios1 (IdFuncionario),
+CONSTRAINT feito FOREIGN KEY (IdServiço)
+    REFERENCES tbl_Servicos1 (IdServiço),
+);
+
+CREATE TABLE tbl_logon (
+Nome_user VARCHAR (30) NOT NULL,
+Senha VARCHAR (255)
+);
+
+CREATE TABLE tbl_Clientelogon (
+cliente_user VARCHAR (30) NOT NULL,
+clientesenha VARCHAR (255)
+);
+
+INSERT INTO tbl_CadastroCliente1 (NomeCliente, Telefone, DataAgendamento, HorarioAgendamento) VALUES 
+('Carlos Almeida', '11991234587', '20231002', '11:30:00'), ('Paulo Fernandes','11963185506', '20231002', '12:10:00'),('Fabricio Castro','15945011789', '20231002', '12:30:00'),
+('Willian Silva', '11961179956', '20231002', '11:20:00'), ('Ney Matogrosso','11999838501', '20231002', '13:00:00'),('João Henrique','11982854127', '20231002', '13:10:00'),
+('Juliano Flores','11965874123', '20231002', '14:50:00'),('Daniel Filho','11951244236', '20231002', '16:00:00'),('Rafael Soares','11995874124', '20231002', '15:00:00'),
+('Michel Ferreira','11971255236', '20231002', '11:15:00');
+
+INSERT INTO tbl_Servicos1 (NomeServico, DescricaoServico, PreçoServico) VALUES
+('Corte Estrela','Simples', 35.00),('Corte Degrade','Detalhado com risco ou sem', 40.00),
+('Barba Estrela','Simples', 35.00),('Combo Estrela','Corte + Barba Simples',60.00),
+('Barba Pigmentada','Com aplicação de Tinta',45.00),('Luzes e Luzes Invertida','Luzes simples ou invertida que consiste iluminar algumas mechas',50.00),
+('Coloração','Simples',35.00),('Platinado','Descoloração',80.00),('Alisamento','Alisar os fios',50.00);
+
+INSERT INTO tbl_Funcionarios1(NomeFuncionario, SobrenomeFuncionario, FuncaoFuncionario)
+VALUES 
+('Gabriela', 'Kreps', 'Recepcionista'), ('Tatiane', 'Lopes', 'Barbeira'), ('Kauan', 'Carillo', 'Barbeiro'), ('Izabela', 'Cerqueira', 'Barbeira'), ('Ana', 'Caroline', 'Barbeira');
+
+INSERT INTO tbl_funcionario_cliente (IdCliente, IdFuncionario)
+VALUES (1, 2), (2, 2), (3, 2), 
+(4, 3), (5, 3), 
+(6, 4),  (7, 4), (8, 4), 
+(9, 5),(10, 5);
+
+INSERT INTO tbl_funcionario_servico (IdServiço, IdFuncionario)
+VALUES (1, 2), (2, 2), (3, 2), 
+(4, 3), (5, 3), 
+(6, 4),  (7, 4), (8, 4), 
+(9, 5),(5, 5);
+
+INSERT INTO tbl_Cliente_Servicos1 (IdCliente, IdServiço)
+VALUES (1, 2), (2, 9), (3, 5), 
+(4, 3), (5, 7), 
+(6,5 ),  (7, 4), (8, 1), 
+(9, 8),(10, 6);
+
+
+SELECT CC.DataAgendamento, CC.HorarioAgendamento, SC.NomeServico, SC.PreçoServico, FUNC.NomeFuncionario
+FROM tbl_CadastroCliente1 CC
+INNER JOIN tbl_Cliente_Servicos1 CS
+ON CC.IdCliente = CS.IdCliente
+INNER JOIN tbl_Servicos1 SC
+ON CS.IdServiço = SC.IdServiço
+INNER JOIN tbl_funcionario_servico FSC
+ON FSC.IdServiço = SC.IdServiço
+INNER JOIN tbl_Funcionarios1 FUNC
+ON FUNC.IdFuncionario = FSC.IdFuncionario
+WHERE NomeCliente = 'Carlos Almeida'
+
+SELECT CC.NomeCliente, CC.DataAgendamento, CC.HorarioAgendamento, SC.NomeServico, SC.PreçoServico, CC.Telefone
+FROM tbl_Cliente_Servicos1 CS
+INNER JOIN tbl_CadastroCliente1 CC
+ON CS.IdCliente = CC.IdCliente
+INNER JOIN tbl_Servicos1 SC
+ON SC.IdServiço = CS.IdServiço
+WHERE NomeCliente = 'Carlos Almeida'
+
+
+SELECT * FROM tbl_CadastroCliente1;
+SELECT * FROM tbl_Funcionarios1;
+SELECT * FROM tbl_Servicos1;
+SELECT * FROM tbl_Cliente_Servicos1;
+SELECT * FROM tbl_funcionario_cliente;
+SELECT * FROM tbl_funcionario_servico;
+select * from tbl_logon;
