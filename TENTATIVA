@@ -1,0 +1,114 @@
+CREATE DATABASE db_Projeto ON PRIMARY (
+NAME = db_Projeto,
+FILENAME = 'C:\SQL\db_Projeto.mdf' ,
+SIZE = 6MB,
+MAXSIZE = 15MB,
+FILEGROWTH = 10%
+)
+LOG ON (
+NAME = db_Projeto_log,
+FILENAME = 'C:\SQL\db_Projeto_log.ldf',
+SIZE = 1MB,
+FILEGROWTH = 1MB
+)
+GO
+
+USE db_Projeto;
+
+CREATE TABLE tbl_Funcionarios1 (
+IdFuncionario SMALLINT PRIMARY KEY IDENTITY,
+NomeFuncionario VARCHAR(60) NOT NULL,
+SobrenomeFuncionario VARCHAR (60) NOT NULL,
+FuncaoFuncionario Varchar (60) NOT NULL
+);
+
+CREATE TABLE tbl_CadastroCliente1 (
+IdCliente SMALLINT PRIMARY KEY IDENTITY,
+NomeCliente VARCHAR(60) NOT NULL,
+Telefone VARCHAR (11) NOT NULL,
+);
+--loginCliente VARCHAR(30) NOT NULL,
+--senhaCliente VARCHAR(255) NOT NULL
+
+CREATE TABLE tbl_Servicos1 (
+IdServiço SMALLINT PRIMARY KEY IDENTITY,
+NomeServico VARCHAR (80) NOT NULL,
+PreçoServico MONEY ,
+DescricaoServico VARCHAR (300),
+);
+
+CREATE TABLE tbl_AgendamentoCliente(
+IdCliente SMALLINT NOT NULL,
+IdServiço SMALLINT NOT NULL,
+DataAgendamento date,
+HorarioAgendamento time,
+CONSTRAINT chavefk PRIMARY KEY(IdCliente,IdServiço),
+CONSTRAINT rece FOREIGN KEY (IdCliente)
+    REFERENCES tbl_CadastroCliente1 (IdCliente),
+CONSTRAINT recebid FOREIGN KEY (IdServiço)
+    REFERENCES tbl_Servicos1 (IdServiço),
+);
+INSERT INTO tbl_AgendamentoCliente(IdCliente, IdServiço, DataAgendamento, HorarioAgendamento) VALUES
+(1, 2, '20230520', '15:00:00')
+
+CREATE TABLE tbl_funcionario_servico (
+IdFuncionario SMALLINT NOT NULL,
+IdServiço SMALLINT NOT NULL,
+CONSTRAINT fkkey PRIMARY KEY(IdFuncionario,IdServiço),
+CONSTRAINT faz FOREIGN KEY (IdFuncionario)
+    REFERENCES tbl_Funcionarios1 (IdFuncionario),
+CONSTRAINT feito FOREIGN KEY (IdServiço)
+    REFERENCES tbl_Servicos1 (IdServiço),
+);
+
+CREATE TABLE tbl_logon (
+Nome_user VARCHAR (30) NOT NULL,
+Senha VARCHAR (255)
+);
+
+INSERT INTO tbl_CadastroCliente1 (NomeCliente, Telefone) VALUES 
+('Carlos Almeida', '11991234587'), ('Paulo Fernandes','11963185506'),('Fabricio Castro','15945011789'),
+('Willian Silva', '11961179956'), ('Ney Matogrosso','11999838501'),('João Henrique','11982854127'),
+('Juliano Flores','11965874123'),('Daniel Filho','11951244236'),('Rafael Soares','11995874124'),
+('Michel Ferreira','11971255236');
+
+INSERT INTO tbl_Servicos1 (NomeServico, DescricaoServico, PreçoServico) VALUES
+ ('Corte Estrela','Simples', 35.00),('Corte Degrade','Detalhado com risco ou sem', 40.00),
+('Barba Estrela','Simples', 35.00),('Combo Estrela','Corte + Barba Simples',60.00),
+('Barba Pigmentada','Com aplicação de Tinta',45.00),('Luzes e Luzes Invertida','Luzes simples ou invertida que consiste iluminar algumas mechas',50.00),
+('Coloração','Simples',35.00),('Platinado','Descoloração',80.00),('Alisamento','Alisar os fios',50.00);
+
+INSERT INTO tbl_Funcionarios1(NomeFuncionario, SobrenomeFuncionario, FuncaoFuncionario)
+VALUES 
+('Gabriela', 'Kreps', 'Recepcionista'), ('Tatiane', 'Lopes', 'Barbeira'), ('Kauan', 'Carillo', 'Barbeiro'), ('Izabela', 'Cerqueira', 'Barbeira'), ('Ana', 'Caroline', 'Barbeira');
+
+
+INSERT INTO tbl_funcionario_servico (IdServiço, IdFuncionario)
+VALUES (1, 2), (2, 2), (3, 2), 
+(4, 3), (5, 3), 
+(6, 4),  (7, 4), (8, 4), 
+(9, 5),(5, 5);
+
+
+
+SELECT DataAgendamento, HorarioAgendamento, NomeServico, PreçoServico
+FROM tbl_CadastroCliente1 CC
+INNER JOIN tbl_AgendamentoCliente AC
+ON CC.IdCliente = AC.IdCliente 
+INNER JOIN tbl_Servicos1 SC
+ON SC.IdServiço = AC.IdServiço
+
+
+SELECT CC.NomeCliente, AC.DataAgendamento, AC.HorarioAgendamento, SC.NomeServico, SC.PreçoServico, CC.Telefone
+FROM tbl_CadastroCliente1 CC
+INNER JOIN tbl_AgendamentoCliente AC
+ON AC.IdCliente = CC.IdCliente
+INNER JOIN tbl_Servicos1 SC
+ON SC.IdServiço = AC.IdServiço
+WHERE NomeCliente = 'Carlos Almeida';
+
+SELECT * FROM tbl_CadastroCliente1;
+SELECT * FROM tbl_Funcionarios1;
+SELECT * FROM tbl_Servicos1;
+SELECT * FROM tbl_funcionario_servico;
+select * from tbl_logon;
