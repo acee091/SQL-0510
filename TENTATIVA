@@ -139,3 +139,6 @@ SELECT * FROM tbl_Funcionarios1;
 SELECT * FROM tbl_Servicos1;
 SELECT * FROM tbl_AgendamentoCliente;
 select * from tbl_logon;
+
+BACKUP DATABASE db_Projeto
+TO DISK= 'C:\SQL\db_Projeto.bak'
