@@ -26,9 +26,9 @@ CREATE TABLE tbl_CadastroCliente1 (
 IdCliente SMALLINT PRIMARY KEY IDENTITY,
 NomeCliente VARCHAR(60) NOT NULL,
 Telefone VARCHAR (11) NOT NULL,
+loginCliente VARCHAR(30) NOT NULL,
+senhaCliente VARCHAR(255) NOT NULL
 );
---loginCliente VARCHAR(30) NOT NULL,
---senhaCliente VARCHAR(255) NOT NULL
 
 CREATE TABLE tbl_Servicos1 (
 IdServiço SMALLINT PRIMARY KEY IDENTITY,
@@ -49,8 +49,10 @@ CONSTRAINT recebid FOREIGN KEY (IdServiço)
     REFERENCES tbl_Servicos1 (IdServiço),
 );
 INSERT INTO tbl_AgendamentoCliente(IdCliente, IdServiço, DataAgendamento, HorarioAgendamento) VALUES
-(1, 2, '20230520', '15:00:00')
+(1, 3, '20230720', '14:00:00'),
+(2, 4, '20230522', '17:00:00');
 
+drop table tbl_AgendamentoCliente
 CREATE TABLE tbl_funcionario_servico (
 IdFuncionario SMALLINT NOT NULL,
 IdServiço SMALLINT NOT NULL,
@@ -89,15 +91,40 @@ VALUES (1, 2), (2, 2), (3, 2),
 (6, 4),  (7, 4), (8, 4), 
 (9, 5),(5, 5);
 
+SELECT PreçoServico, IdServiço FROM tbl_Servicos1 WHERE NomeServico = 'Alisamento'
 
-
-SELECT DataAgendamento, HorarioAgendamento, NomeServico, PreçoServico
+SELECT IdCliente FROM tbl_CadastroCliente1 WHERE NomeCliente = 'Ana'
+SELECT CC.IdCliente, DataAgendamento, HorarioAgendamento, NomeServico, PreçoServico
 FROM tbl_CadastroCliente1 CC
 INNER JOIN tbl_AgendamentoCliente AC
 ON CC.IdCliente = AC.IdCliente 
 INNER JOIN tbl_Servicos1 SC
 ON SC.IdServiço = AC.IdServiço
+WHERE CC.NomeCliente = 'Ana'
 
+SELECT CC.IdCliente, DataAgendamento, HorarioAgendamento, NomeServico, PreçoServico, NomeFuncionario
+FROM tbl_CadastroCliente1 CC
+INNER JOIN tbl_AgendamentoCliente AC
+ON CC.IdCliente = AC.IdCliente 
+INNER JOIN tbl_Servicos1 SC
+ON SC.IdServiço = AC.IdServiço
+WHERE CC.NomeCliente = 'Ana'
+
+SELECT AC.DataAgendamento, AC.HorarioAgendamento, SC.NomeServico, SC.PreçoServico, F.NomeFuncionario
+FROM tbl_AgendamentoCliente AC
+INNER JOIN tbl_funcionario_servico FC
+ON FC.IdServiço = AC.IdServiço
+INNER JOIN tbl_Funcionarios1 F
+ON F.IdFuncionario = FC.IdFuncionario
+INNER JOIN tbl_Servicos1 SC
+ON SC.IdServiço = AC.IdServiço
+INNER JOIN tbl_CadastroCliente1 CC
+ON CC.IdCliente = AC.IdCliente
+WHERE NomeCliente = ''
+
+SELECT IdCliente
+FROM tbl_CadastroCliente1
+Where NomeCliente = 'Ana'
 
 SELECT CC.NomeCliente, AC.DataAgendamento, AC.HorarioAgendamento, SC.NomeServico, SC.PreçoServico, CC.Telefone
 FROM tbl_CadastroCliente1 CC
@@ -105,10 +132,10 @@ INNER JOIN tbl_AgendamentoCliente AC
 ON AC.IdCliente = CC.IdCliente
 INNER JOIN tbl_Servicos1 SC
 ON SC.IdServiço = AC.IdServiço
-WHERE NomeCliente = 'Carlos Almeida';
+WHERE NomeCliente = 'Ana';
 
 SELECT * FROM tbl_CadastroCliente1;
 SELECT * FROM tbl_Funcionarios1;
 SELECT * FROM tbl_Servicos1;
-SELECT * FROM tbl_funcionario_servico;
+SELECT * FROM tbl_AgendamentoCliente;
 select * from tbl_logon;
